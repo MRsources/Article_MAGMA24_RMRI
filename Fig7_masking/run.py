@@ -193,10 +193,15 @@ plt.savefig("plot_1.png", dpi=900, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # Masks plots
+# Add text in the middle of the plot
+middle_x = (np.sqrt(no_mask)).shape[1] // 2  # Middle x-coordinate
+middle_y = (np.sqrt(no_mask)).shape[0] // 2  # Middle y-coordinate 
+
 plt.figure(figsize=(5, 5))
 no_mask_label = f"NRMSE: {no_mask_nrmse:.3f}".replace("0.", ".")
 plt.title(no_mask_label, fontsize=32)
 plt.imshow(np.sqrt(no_mask), cmap='gray')
+plt.text(middle_x, middle_y, "No \nmask", fontsize=32, color='black', ha='center', va='center')
 plt.axis('off')
 plt.savefig("plot_3.png", dpi=900, bbox_inches='tight', pad_inches=0)
 plt.close()
@@ -205,6 +210,7 @@ plt.figure(figsize=(5, 5))
 wide_mask_label = f"NRMSE: {wide_mask_nrmse:.3f}".replace("0.", ".")
 plt.title(wide_mask_label, fontsize=32)
 plt.imshow(np.sqrt(wide_mask), cmap='gray')
+plt.text(middle_x, middle_y, "Wide \nmask", fontsize=32, color='black', ha='center', va='center')
 plt.axis('off')
 plt.savefig("plot_4.png", dpi=900, bbox_inches='tight', pad_inches=0)
 plt.close()
@@ -213,6 +219,7 @@ plt.figure(figsize=(5, 5))
 tight_mask_label = f"NRMSE: {tight_mask_nrmse:.3f}".replace("0.", ".")
 plt.title(tight_mask_label, fontsize=32)
 plt.imshow(np.sqrt(tight_mask), cmap='gray')
+plt.text(middle_x, middle_y, "Tight \nmask", fontsize=32, color='black', ha='center', va='center')
 plt.axis('off')
 plt.savefig("plot_5.png", dpi=900, bbox_inches='tight', pad_inches=0)
 plt.close()
