@@ -3,8 +3,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.ndimage import binary_dilation, binary_erosion, binary_closing
-from fastmri.data import transforms, subsample
-import torch
 import cfl
 from bart import bart
 import os
@@ -84,6 +82,36 @@ def crop_image_horizontal(data, crop_fraction=0.2):
     crop_size = int(width * crop_fraction)
     return data[:,crop_size:width - crop_size, ...]
 
+def equispaced_mask(shape, factor, center_fraction=0.06):
+    """
+    Generate an equispaced undersampling mask.
+    
+    Args:
+        shape (tuple): Shape of the mask (height, width).
+        factor (int): Undersampling factor (controls acceleration).
+        center_fraction (float): Fraction of the center k-space to retain.
+
+    Returns:
+        np.ndarray: Equispaced undersampling mask.
+    """
+    height, width = shape  # Assuming shape is (height, width)
+    # Calculate the number of center lines to retain
+    num_center_lines = int(factor* center_fraction * width)
+    # Initialize the mask with zeros
+    mask = np.zeros((height, width), dtype=np.float32)
+    
+    # Add equispaced lines
+    step = factor  # Step size for equispaced lines
+    for i in range(0, width, step):
+        mask[:, i] = 1  # Set all pixels in the line to 1
+    
+    # Add center lines (full sampling in the center)
+    center_start = (width // 2) - (num_center_lines // 2)
+    center_end = center_start + num_center_lines
+    mask[:, center_start:center_end] = 1
+    
+    return mask
+
 # %% [markdown]
 # # Read raw data
 
@@ -93,26 +121,18 @@ def crop_image_horizontal(data, crop_fraction=0.2):
 # local data
 odir = os.path.abspath(os.path.dirname(sys.argv[0]))
 ksp_all = cfl.readcfl(odir+'/../Data/ksp_fully')
-print(ksp_all.shape)
 slice_ksp_r1 = ksp_all
-print(slice_ksp_r1.shape)
 slice_ksp_r1 = slice_ksp_r1[:,:,0,:]
-print(slice_ksp_r1.shape)
+
 
 # %% [markdown]
 # # Generate sampling mask
 
 # %%
-def get_mask_func( factor):
-    center_fractions = 0.06 * 4/factor # EquiSpacedMaskFunc
-    mask_func = subsample.EquiSpacedMaskFunc(
-    center_fractions=[center_fractions],
-    accelerations=[factor],
-    )
-    return mask_func
-mask_func = get_mask_func(2)
-mask = transforms.apply_mask(torch.ones(640,420,32), mask_func)[0]
-undersampling_mask = mask.numpy()
+shape = (640, 420)  # Example shape
+factor = 2 # Undersampling factor
+mask_np = equispaced_mask(shape, factor)
+undersampling_mask = np.repeat(np.expand_dims(mask_np, axis=2), 32, axis=2)
 
 # %% [markdown]
 # # Data processing
@@ -193,10 +213,15 @@ plt.savefig("plot_1.png", dpi=900, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # Masks plots
+# Add text in the middle of the plot
+middle_x = (np.sqrt(no_mask)).shape[1] // 2  # Middle x-coordinate
+middle_y = (np.sqrt(no_mask)).shape[0] // 2  # Middle y-coordinate 
+
 plt.figure(figsize=(5, 5))
 no_mask_label = f"NRMSE: {no_mask_nrmse:.3f}".replace("0.", ".")
 plt.title(no_mask_label, fontsize=32)
 plt.imshow(np.sqrt(no_mask), cmap='gray')
+plt.text(middle_x, middle_y, "No \nmask", fontsize=32, color='black', ha='center', va='center')
 plt.axis('off')
 plt.savefig("plot_3.png", dpi=900, bbox_inches='tight', pad_inches=0)
 plt.close()
@@ -205,6 +230,7 @@ plt.figure(figsize=(5, 5))
 wide_mask_label = f"NRMSE: {wide_mask_nrmse:.3f}".replace("0.", ".")
 plt.title(wide_mask_label, fontsize=32)
 plt.imshow(np.sqrt(wide_mask), cmap='gray')
+plt.text(middle_x, middle_y, "Wide \nmask", fontsize=32, color='black', ha='center', va='center')
 plt.axis('off')
 plt.savefig("plot_4.png", dpi=900, bbox_inches='tight', pad_inches=0)
 plt.close()
@@ -213,6 +239,7 @@ plt.figure(figsize=(5, 5))
 tight_mask_label = f"NRMSE: {tight_mask_nrmse:.3f}".replace("0.", ".")
 plt.title(tight_mask_label, fontsize=32)
 plt.imshow(np.sqrt(tight_mask), cmap='gray')
+plt.text(middle_x, middle_y, "Tight \nmask", fontsize=32, color='black', ha='center', va='center')
 plt.axis('off')
 plt.savefig("plot_5.png", dpi=900, bbox_inches='tight', pad_inches=0)
 plt.close()
