@@ -5,6 +5,8 @@
 set -eu
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )
 
+export BART_COMPAT_VERSION="v0.9.00"
+
 echo "BART version: $(bart version)"
 
 DDIR=$SCRIPT_DIR/../Data
