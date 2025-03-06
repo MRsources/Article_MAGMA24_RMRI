@@ -1,6 +1,6 @@
-# Article_MAGMA24_RMRI
+# MRI acquisition and reconstruction cookbook: recipes for reproducibility, served with real-world flavour
 
-This repository contains the code to reproduce the results of the article ...
+This repository contains the code to reproduce the results of the article **MRI acquisition and reconstruction cookbook: recipes for reproducibility, served with real-world flavour*.*
 
 ## Requirements
 
@@ -31,3 +31,6 @@ export BART_TOOLBOX_PATH=/path/to/bart/
 ```
 
 ## How to cite
+
+Tamir, J.I., Blumenthal, M., Wang, J. et al. MRI acquisition and reconstruction cookbook: recipes for reproducibility, served with real-world flavour. Magn Reson Mater Phy (2025). https://doi.org/10.1007/s10334-025-01236-4
+
