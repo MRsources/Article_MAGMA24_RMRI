@@ -2,6 +2,8 @@
 
 This repository contains the code to reproduce the results of the article **MRI acquisition and reconstruction cookbook: recipes for reproducibility, served with real-world flavour*.*
 
+Tamir JI, Blumenthal M, Wang J, Oved T, Shimron E, Zaiss M. MRI acquisition and reconstruction cookbook: recipes for reproducibility, served with real-world flavour. MAGMA. 2025 Mar 6. doi: 10.1007/s10334-025-01236-4. Epub ahead of print. PMID: 40048131. https://doi.org/10.1007/s10334-025-01236-4 
+
 ## Requirements
 
 This repository has various requirements to run the experiments. Key requirements are:
